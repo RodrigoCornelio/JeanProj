@@ -1,0 +1,133 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/RodrigoCornelio/JeanProj/blob/main/ProjFinal%20Prof%20Jean%20\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "import numpy as np\n",
+        "from sklearn.preprocessing import MinMaxScaler\n",
+        "\n",
+        "df = pd.read_excel('/content/Int.xlsx')\n",
+        "\n",
+        "print(df.columns)\n",
+        "\n",
+        "colunas_analise = ['População ', 'pib', 'gini', 'Bandalargam', 'bandalargaav',\n",
+        "       'equitec', 'escolaInter', 'compalunos', 'incdigital']\n",
+        "\n",
+        "for col in colunas_analise:\n",
+        "\n",
+        "  df[col] = df[col].astype(str).str.replace(',', '.', regex=False)\n",
+        "  df[col] = pd.to_numeric(df[col], errors='coerce')\n",
+        "\n",
+        "scaler = MinMaxScaler()\n",
+        "df_normalizado = df.copy()\n",
+        "df_normalizado[colunas_analise] = scaler.fit_transform(df[colunas_analise])\n",
+        "\n",
+        "\n",
+        "pesos = {\n",
+        "    'População ': 0.1,\n",
+        "    'pib': 0.2,\n",
+        "    'gini': -0.2,\n",
+        "    'Bandalargam': 0.3,\n",
+        "    'bandalargaav': 0.2,\n",
+        "    'equitec': 0.25,\n",
+        "    'escolaInter': 0.25,\n",
+        "    'compalunos': 0.2,\n",
+        "    'incdigital': 0.3\n",
+        "}\n",
+        "\n",
+        "df_normalizado['pontuacao'] = 0\n",
+        "\n",
+        "for coluna, peso in pesos.items():\n",
+        "    df_normalizado['pontuacao'] += df_normalizado[coluna] * peso\n",
+        "\n",
+        "    top_10 = df_normalizado.sort_values('pontuacao', ascending=False).head(10)\n",
+        "\n",
+        "print(\"Columns in top_10 DataFrame:\", top_10.columns)\n",
+        "\n",
+        "print(top_10[['cidade ', 'pontuacao']])\n"
+      ],
+      "metadata": {
+        "id": "GtPGWHvdcPU2",
+        "outputId": "c21f325c-c4d1-496a-fa97-ccc518e4cab2",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        }
+      },
+      "execution_count": 44,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Index(['cidade ', 'População ', 'pib', 'gini', 'Bandalargam', 'bandalargaav',\n",
+            "       'equitec', 'escolaInter', 'compalunos', 'incdigital'],\n",
+            "      dtype='object')\n",
+            "Columns in top_10 DataFrame: Index(['cidade ', 'População ', 'pib', 'gini', 'Bandalargam', 'bandalargaav',\n",
+            "       'equitec', 'escolaInter', 'compalunos', 'incdigital', 'pontuacao'],\n",
+            "      dtype='object')\n",
+            "                  cidade   pontuacao\n",
+            "3853             Piratuba   0.901656\n",
+            "1680              Erechim   0.896941\n",
+            "729              Boracéia   0.888006\n",
+            "4375  Santa Cruz de Minas   0.855932\n",
+            "1254              Chapecó   0.854016\n",
+            "4606   São Caetano do Sul   0.817624\n",
+            "3897      Poços de Caldas   0.809298\n",
+            "2623    Juazeiro do Norte   0.800502\n",
+            "1735      Fagundes Varela   0.798668\n",
+            "1507             Curitiba   0.795787\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print(df.columns)"
+      ],
+      "metadata": {
+        "id": "gubkAse1qRe4",
+        "outputId": "c1a4bba3-b136-4c7f-cb84-ce4319ba5ad9",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        }
+      },
+      "execution_count": 40,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Index(['cidade ', 'População ', 'pib', 'gini', 'Bandalargam', 'bandalargaav',\n",
+            "       'equitec', 'escolaInter', 'compalunos', 'incdigital'],\n",
+            "      dtype='object')\n"
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "colab": {
+      "name": "Conheça o Colab",
+      "provenance": [],
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "display_name": "Python 3",
+      "name": "python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}
